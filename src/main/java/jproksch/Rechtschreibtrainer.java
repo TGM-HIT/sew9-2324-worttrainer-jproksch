@@ -13,7 +13,9 @@ public class Rechtschreibtrainer {
     //private Set<Integer> usedIndex; // Ein Set, um bereits verwendete Indizes zu verfolgen
     private WortPaar aktivWortPaar; // Das aktuell angezeigte Wort-Bild-Paar
     private int richtig, versuche; // Zähler für richtige und insgesamt Versuche
-    private Random random; // Ein Zufallszahlengenerator
+    private Random random;
+    private SaveType saveType;
+    // Ein Zufallszahlengenerator
 
     /**
      * Konstruktor für die Rechtschreibtrainer-Klasse.
@@ -25,6 +27,7 @@ public class Rechtschreibtrainer {
         richtig = 0; // Initialisierung des Zählers für "richtig"
         versuche = 0; // Initialisierung des Zählers für "versuche"
         random = new Random(); // Initialisierung des Zufallszahlengenerators
+        saveType = new FileSave();
     }
 
     /**
@@ -66,28 +69,8 @@ public class Rechtschreibtrainer {
      *
      * @param filePath Der Dateipfad zur Datei, die gelesen werden soll.
      */
-    public void getInformation(String filePath) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath)); // Erstelle einen BufferedReader zum Lesen der Datei
-            String line;
-
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(","); // Trenne jede Zeile anhand des Kommas
-                if (parts[0].equals("score")){
-                    this.richtig = Integer.parseInt(parts[1]);
-                    this.versuche = Integer.parseInt(parts[2]);
-                    //System.out.println(Arrays.toString(parts));
-                }else{
-                    //System.out.println(parts[0]+","+parts[1]);
-                    list.add(new WortPaar(parts[0], parts[1])); // Erstelle ein WortPaar-Objekt und füge es der Liste hinzu
-                }
-            }
-            aktivWortPaar = getRandomPaar(); // Wähle ein zufälliges aktives Wort-Bild-Paar aus
-            reader.close(); // Schließe den BufferedReader
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Fehler beim Lesen der Datei."); // Fehlermeldung, wenn ein Fehler beim Lesen der Datei auftritt
-        }
+    public void getInformation(Rechtschreibtrainer rechtschreibtrainer,String filePath) {
+        this.saveType.getInformation(rechtschreibtrainer,filePath);
     }
 
     /**
@@ -97,19 +80,7 @@ public class Rechtschreibtrainer {
      * @throws IOException Wenn ein Fehler beim Schreiben in die Datei auftritt.
      */
     public void setScore(String filePath) throws IOException {
-        // Öffnen Sie die Datei zum Schreiben
-        BufferedWriter bf = new BufferedWriter(new FileWriter(filePath));
-
-        // Schreiben Sie den Punktestand und die Anzahl der Versuche und richtigen Antworten in die Datei
-        bf.write("score," + versuche + "," + richtig + "\n");
-
-        // Schreiben Sie die Daten für jedes Wortpaar in die Datei
-        for (WortPaar wortPaar : list) {
-            bf.write(wortPaar.getName() + "," + wortPaar.getUrl() + "\n");
-        }
-
-        // Schließen Sie die Datei
-        bf.close();
+        this.saveType.save(filePath,this);
     }
 
     /**
@@ -119,20 +90,7 @@ public class Rechtschreibtrainer {
      * @throws IOException Wenn ein Fehler beim Schreiben in die Datei auftritt.
      */
     public void resetScore(String filePath) throws IOException {
-        // Öffnen Sie die Datei zum Schreiben
-        BufferedWriter bf = new BufferedWriter(new FileWriter(filePath));
-
-        this.richtig = 0;
-        this.versuche = 0;
-        // Setzen Sie den Punktestand auf 0 und schreiben Sie ihn in die Datei
-        bf.write("score,0,0\n");
-
-        // Schreiben Sie die Daten für jedes Wortpaar in die Datei
-        for (WortPaar wortPaar : list) {
-            bf.write(wortPaar.getName() + "," + wortPaar.getUrl() + "\n");
-        }
-        // Schließen Sie die Datei
-        bf.close();
+        this.saveType.reset(filePath,this);
     }
 
     /**
@@ -163,5 +121,29 @@ public class Rechtschreibtrainer {
         if (wortPaar.getName().length()>0){
             this.list.add(wortPaar);
         }
+    }
+
+    public void setRichtig(int richtig) {
+        this.richtig = richtig;
+    }
+
+    public void setVersuche(int versuche) {
+        this.versuche = versuche;
+    }
+
+    public void setAktivWortPaar(WortPaar wortPaar){
+        this.aktivWortPaar = wortPaar;
+    }
+
+    public List<WortPaar> getList() {
+        return list;
+    }
+
+    public int getRichtig() {
+        return richtig;
+    }
+
+    public int getVersuche() {
+        return versuche;
     }
 }
