@@ -1,0 +1,11 @@
+jproksch/Main.java
+ jproksch.Main
+jproksch/Rechtschreibtrainer.java
+ jproksch.Rechtschreibtrainer
+jproksch/Gui.java
+ jproksch.Gui
+ jproksch.Gui$1
+ jproksch.Gui$2
+ jproksch.Gui$3
+jproksch/WortPaar.java
+ jproksch.WortPaar
