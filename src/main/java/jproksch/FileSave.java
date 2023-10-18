@@ -4,6 +4,7 @@ import java.io.*;
 
 public class FileSave implements SaveType{
 
+    //private final static
 
     @Override
     public void save(String path, Rechtschreibtrainer rechtschreibtrainer) throws IOException {
